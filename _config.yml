@@ -1,0 +1,27 @@
+# Site settings
+title: na_o_ys のブログ
+email: naoyoshi0511@gmail.com
+description: > # this means to ignore newlines until "baseurl:"
+  プログラミングのメモなど
+baseurl: "" # the subpath of your site, e.g. /blog/
+url: "http://na-o-y.github.io" # the base hostname & protocol for your site
+twitter_username: na_o_ys
+github_username: na-o-y
+
+# Build settings
+markdown: redcarpet
+redcarpet:
+  extensions: [autolink]
+
+highlighter: rouge
+kramdown:
+  input: GFM
+#  use_coderay: true
+#  coderay:
+#    coderay_line_numbers: true
+#    coderay_css: class
+
+exclude: [vendor]
+
+# Outputting
+# permalink: /:contest/:title.html

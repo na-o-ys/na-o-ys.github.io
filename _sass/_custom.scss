@@ -1,0 +1,16 @@
+.highlight code {
+    font-family: 'Monaco', 'Consolas', 'Courier New', Courier, monospace, sans-serif;
+    font-size: 13px;
+}
+
+.crumbs ol li {
+    display: inline;
+    list-style-type: none;
+
+    &:after {
+        content: " > ";
+    }
+    &:last-child:after {
+      content: none;
+    }
+}

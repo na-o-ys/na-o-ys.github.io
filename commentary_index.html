@@ -1,0 +1,34 @@
+---
+layout: default
+title: Solutions Top
+---
+
+<div class="home">
+
+  <h1 class="page-heading">Solutions</h1>
+
+  <ul class="contest-list">
+    {% for contest in page.contests %}
+    <li>
+      {{ contest[0] }}
+      <ul class="competition-list">
+        {% for competition in contest[1] %}
+        <li>
+          {{ competition[0] }}
+          <ul class="problem-list">
+            {% for problem in competition[1] %}
+            <li>
+              <a href="{{ problem.permalink }}">
+              [{{ problem.type }}] {{ problem.name }}
+              </a>
+            </li>
+            {% endfor %}
+          </ul>
+        </li>
+        {% endfor %}
+      </ul>
+    </li>
+    {% endfor %}
+  </ul>
+
+</div>
