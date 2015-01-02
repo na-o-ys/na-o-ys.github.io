@@ -12,25 +12,22 @@ module Competition
     priority :high
 
     def generate(site)
-      site.posts.select {|page| page.data['type'] == 'commentary'}.each do |page|
+      site.posts.select {|page| page.data['layout'] == 'competition'}.each do |page|
         contest     = page.data['contest']
         competition = page.data['competition']
         type        = page.data['problem_type']
         name        = page.data['problem_name']
         page.data['contest_url'] = "/#{contest.to_path}/"
         page.data['competition_url'] = "/#{contest.to_path}/#{competition.to_path}/"
-        page.data['title'] =
-          "#{contest} #{competition} #{type}, #{name}"
         page.data['title_sub'] =
-          [contest, competition].join(" ")
+          [contest, competition].compact.join(" ")
         if type.present?
           page.data['title_main'] = "#{type}: #{name}"
         else
           page.data['title_main'] = name
         end
-
-        # page.data['permalink'] =
-        #   "/#{contest.to_path}/#{competition.to_path}/#{name.to_path}.html"
+        page.data['title'] =
+          "#{contest} #{competition} #{type}: #{name}"
       end
     end
   end

@@ -1,7 +1,6 @@
 ---
-layout: commentary
+layout: competition
 date: 2014-12-30
-type: commentary
 contest: Codeforces
 competition: Good Bye 2014
 problem_type: C

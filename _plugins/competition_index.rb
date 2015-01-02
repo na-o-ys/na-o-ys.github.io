@@ -5,7 +5,7 @@ module Competition
 
     def generate(site)
       contests = {}
-      solutions = site.posts.select { |page| page.data['type'] == 'commentary' }
+      solutions = site.posts.select { |page| page.data['layout'] == 'competition' }
       solutions.sort_by { |page| page.date  }.reverse.each do |page|
         contest     = page.data['contest']
         competition = page.data['competition']

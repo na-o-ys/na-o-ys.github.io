@@ -1,7 +1,6 @@
 ---
-layout: commentary
+layout: competition
 date: 2014-09-18
-type: commentary
 contest: Topcoder SRM
 competition: 633 Div1
 problem_type: Easy

@@ -1,7 +1,6 @@
 ---
-layout: commentary
+layout: competition
 date:   2014-12-30 03:02:05
-type: commentary
 contest: Topcoder SRM
 competition: 643 Div1
 problem_type: Med

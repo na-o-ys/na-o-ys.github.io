@@ -1,7 +1,6 @@
 ---
-layout: commentary
-date: 2014-12-30
-type: commentary
+layout: competition
+date: 2015-
 contest: Topcoder SRM
 competition: 
 problem_type: 

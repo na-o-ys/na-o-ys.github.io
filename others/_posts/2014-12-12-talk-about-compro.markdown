@@ -39,19 +39,20 @@ title: 社会人 2 年目が競技プログラミングを始めた 1 年を振�
 
 9 戦連続 1 完でジリジリレートを上げて、あと 1 ポイントで黄色というところまできた。初戦からぴったり半年で黄色コーダーや！と思いきや、その後まさかの 2 連続 0 完で大きく下げる。
 
-[初めての幾何問題](http://na-o-s.hateblo.jp/entry/2014/09/18/135908) に手も足も出ず、悔しい思いをする。
+[初めての幾何問題]({% post_url 2014-09-18-PeriodicJumping %}) に手も足も出ず、悔しい思いをする。
 
 #### 【10 月】
 
 社内でライブ SRM とか、社外向けのエンジニアイベントで[競技プログラミングについて](http://www.slideshare.net/na_o_ys/ss-40811361)喋ったりした。
 
-<iframe src="//www.slideshare.net/slideshow/embed_code/40811361" width="425" height="355" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" style="border:1px solid #CCC; border-width:1px; margin-bottom:5px; max-width: 100%;" allowfullscreen> </iframe> <div style="margin-bottom:5px"> <strong> <a href="//www.slideshare.net/na_o_ys/ss-40811361" title="競技プログラミングの楽しみ" target="_blank">競技プログラミングの楽しみ</a> </strong> from <strong><a href="//www.slideshare.net/na_o_ys" target="_blank">na_o_ys</a></strong> </div>
+<a class="embedly-card" href="http://www.slideshare.net/na_o_ys/ss-40811361">競技プログラミングの楽しみ</a>
+<script async src="//cdn.embedly.com/widgets/platform.js" charset="UTF-8"></script>
 
 ライブ SRM は、、、スピード感全然無いしインタラクティブじゃ無いし緊張して頭回らないしやるべきじゃないと思った。そもそもレギュレーション違反である。
 
 #### 【11 月】黄コーダー
 
-撃墜回で上げることが多い気がする。correct 率 15 % の [SRM 638 Easy](http://na-o-s.hateblo.jp/entry/2014/11/03/193017) を pass して黄コーダーになった。めっちゃはしゃいだ。
+撃墜回で上げることが多い気がする。correct 率 15 % の [SRM 638 Easy]({% post_url 2014-11-03-ShadowSculpture %}) を pass して黄コーダーになった。めっちゃはしゃいだ。
 
 # レート推移
 

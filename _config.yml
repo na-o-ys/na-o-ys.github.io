@@ -9,15 +9,23 @@ twitter_username: na_o_ys
 github_username: na-o-y
 
 # Build settings
-markdown: redcarpet
+#markdown: redcarpet
+markdown: kramdown
 redcarpet:
   extensions: [autolink]
 
 highlighter: rouge
 kramdown:
   input: GFM
+  syntax_highlighter: rouge
+  #syntax_highlighter_opts:
+  #  css_class: hoge
 
 exclude: [vendor]
 
 # Outputting
 permalink: /:categories/:year-:month-:day-:title.html
+
+category_map:
+  others: その他
+  competitions: 競技プログラミング
