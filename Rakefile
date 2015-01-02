@@ -1,23 +1,31 @@
-task :deploy do
-  sh "bin/jekyll build"
-  puts "! Push source branch"
-  # push source branch (source file)
-  sh "git push origin source:source"
-  puts "! Copy static file from _site to _deploy"
-  sh "rm -rf _deploy/*"
-  sh "cp -r _site/* _deploy/"
-  puts "! Change directory _deplay"
-  cd "_deploy" do
-    puts "! Push master branch"
-    sh "git add *"
-    message = "deploy at #{Time.now}"
-    begin
-      sh "git commit -m \"#{message}\""
-      # push master branch (html)
-      sh "git push origin master:master"
-    rescue Exception => e
-      puts "! Error - git command abort"
-      exit -1
-    end
+require 'rubygems'
+require 'rake'
+require 'rdoc'
+require 'date'
+require 'yaml'
+require 'tmpdir'
+require 'jekyll'
+
+desc "Generate blog files"
+task :generate do
+  Jekyll::Site.new(Jekyll.configuration({
+    "source"      => ".",
+    "destination" => "_site"
+  })).process
+end
+
+desc "Generate and publish blog to master"
+task :publish => [:generate] do
+  Dir.mktmpdir do |tmp|
+    system "mv _site/* #{tmp}"
+    system "git checkout -B master"
+    system "rm -rf *"
+    system "mv #{tmp}/* ."
+    message = "Site updated at #{Time.now.utc}"
+    system "git add ."
+    system "git commit -am #{message.shellescape}"
+    system "git push origin master --force"
+    system "git checkout build"
+    system "echo yolo"
   end
 end
