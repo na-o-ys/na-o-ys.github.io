@@ -40,7 +40,9 @@ module Commentary
 
     def generate(site)
       contests = {}
-      site.posts.select {|page| page.data['type'] == 'commentary'}.each do |page|
+      solutions = site.posts.select { |page| page.data['type'] == 'commentary' }
+      solutions.sort_by { |page| page.date  }.reverse.each do |page|
+      # site.posts.select {|page| page.data['type'] == 'commentary'}.each do |page|
         contest     = page.data['contest']
         competition = page.data['competition']
         page_attrs = {
@@ -53,9 +55,9 @@ module Commentary
         contests[contest][competition] << page_attrs
       end
 
-      commentary_index = site.pages.detect {|page| page.name == 'commentary_index.html'}
-      commentary_index.data['contests'] = contests
-      site.data['solution_index'] = commentary_index
+      solution_index = site.pages.detect {|page| page.name == 'solution_index.html'}
+      solution_index.data['contests'] = contests
+      site.data['solution_index'] = solution_index
 
       contests.each do |contest, competitions|
         site.pages << ContestIndexPage.new(site, contest, competitions)

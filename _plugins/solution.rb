@@ -7,8 +7,8 @@ class String
   end
 end
 
-module SRM
-  class SRMGenerator < Jekyll::Generator
+module Solution
+  class SolutionGenerator < Jekyll::Generator
     priority :high
 
     def generate(site)

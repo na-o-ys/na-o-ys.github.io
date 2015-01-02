@@ -1,6 +1,6 @@
 ---
 layout: commentary
-data: 2014-12-30
+date: 2014-12-30
 type: commentary
 contest: Codeforces
 competition: Good Bye 2014

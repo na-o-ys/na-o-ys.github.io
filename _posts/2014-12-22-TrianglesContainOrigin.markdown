@@ -1,9 +1,9 @@
 ---
 layout: commentary
-date:   2014-12-31 03:02:05
+date: 2014-12-22
 type: commentary
 contest: Topcoder SRM
-competition: 642 Div1
+competition: 641 Div1
 problem_type: Easy
 problem_name: TrianglesContainOrigin
 ---
