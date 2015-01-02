@@ -1,11 +1,18 @@
 ---
 layout: default
-title: Solutions Top
+title: Competitions
 ---
 
 <div class="home">
 
-  <h1 class="page-heading">Solutions</h1>
+  <div class="crumbs">
+    <ol>
+      <li><a href="/">ホーム</a></li>
+      <li>Competitions</li>
+    </ol>
+  </div>
+
+  <h1 class="page-heading">Competitions</h1>
 
   <ul class="contest-list">
     {% for contest in page.contests %}
@@ -16,10 +23,10 @@ title: Solutions Top
         <li>
           {{ competition[0] }}
           <ul class="problem-list">
-            {% for problem in competition[1] %}
+            {% for page in competition[1] %}
             <li>
-              <a href="{{ problem.permalink }}">
-              [{{ problem.type }}] {{ problem.name }}
+              <a href="{{ page.url }}">
+                {{ page.title_main }}
               </a>
             </li>
             {% endfor %}

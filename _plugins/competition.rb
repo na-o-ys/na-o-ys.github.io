@@ -7,8 +7,8 @@ class String
   end
 end
 
-module Solution
-  class SolutionGenerator < Jekyll::Generator
+module Competition
+  class CompetitionPageGenerator < Jekyll::Generator
     priority :high
 
     def generate(site)
@@ -21,8 +21,16 @@ module Solution
         page.data['competition_url'] = "/#{contest.to_path}/#{competition.to_path}/"
         page.data['title'] =
           "#{contest} #{competition} #{type}, #{name}"
-        page.data['permalink'] =
-          "/#{contest.to_path}/#{competition.to_path}/#{name.to_path}.html"
+        page.data['title_sub'] =
+          [contest, competition].join(" ")
+        if type.present?
+          page.data['title_main'] = "#{type}: #{name}"
+        else
+          page.data['title_main'] = name
+        end
+
+        # page.data['permalink'] =
+        #   "/#{contest.to_path}/#{competition.to_path}/#{name.to_path}.html"
       end
     end
   end

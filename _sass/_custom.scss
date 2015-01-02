@@ -14,3 +14,21 @@
       content: none;
     }
 }
+
+.category-heading {
+    border-bottom: 1px solid $grey-color-light;
+
+    a {
+        &, &:visited {
+          color: $grey-color-dark;
+          text-decoration: none;
+        }
+        &:hover {
+          color: $grey-color;
+        }
+    }
+
+    .category-count {
+        font-size: 18px;
+    }
+}

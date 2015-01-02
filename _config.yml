@@ -16,12 +16,8 @@ redcarpet:
 highlighter: rouge
 kramdown:
   input: GFM
-#  use_coderay: true
-#  coderay:
-#    coderay_line_numbers: true
-#    coderay_css: class
 
 exclude: [vendor]
 
 # Outputting
-# permalink: /:contest/:title.html
+permalink: /:categories/:year-:month-:day-:title.html

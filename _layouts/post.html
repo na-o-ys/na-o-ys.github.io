@@ -4,15 +4,19 @@ layout: default
 <div class="post">
 
   <header class="post-header">
+    <div class="crumbs">
+      <ol>
+        <li><a href="/">ホーム</a></li>
+        {% for category in page.categories %}
+        <li>
+          <a href="/{{ category }}">{{ category }}</a>
+        </li>
+        {% endfor %}
+        <li>{{ page.title }}</li>
+      </ol>
+    </div>
+
     <h1 class="post-title">{{ page.title }}</h1>
-    <p>
-      {% for category in  page.categories %}
-        {% if forloop.index != 1 %}
-          &gt;
-        {% endif %}
-        {{ category }}
-      {% endfor %}
-    </p>
     <p class="post-meta">{{ page.date | date: "%b %-d, %Y" }}{% if page.author %} • {{ page.author }}{% endif %}{% if page.meta %} • {{ page.meta }}{% endif %}</p>
   </header>
 

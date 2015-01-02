@@ -65,6 +65,7 @@ GEM
       ffi (>= 0.5.0)
     redcarpet (3.2.2)
     rouge (1.7.7)
+    ruby-oembed (0.8.11)
     safe_yaml (1.0.4)
     sass (3.4.9)
     thread_safe (0.3.4)
@@ -83,3 +84,4 @@ DEPENDENCIES
   activesupport
   jekyll
   rouge
+  ruby-oembed
