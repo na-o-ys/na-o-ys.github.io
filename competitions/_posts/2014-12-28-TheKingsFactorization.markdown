@@ -2,8 +2,8 @@
 layout: competition
 date: 2014-12-28
 contest: Topcoder SRM
-competition: 643 Div1
-problem_type: Easy
+competition: '643'
+problem_type: Div1 Easy
 problem_name: TheKingsFactorization
 ---
 

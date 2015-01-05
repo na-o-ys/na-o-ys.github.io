@@ -2,8 +2,8 @@
 layout: competition
 date: 2014-12-29
 contest: Topcoder SRM
-competition: 640 Div1
-problem_type: Easy
+competition: '640'
+problem_type: Div1 Easy
 problem_name: ChristmasTreeDecoration
 ---
 

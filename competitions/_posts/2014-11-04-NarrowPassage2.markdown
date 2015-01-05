@@ -2,8 +2,8 @@
 layout: competition
 date: 2014-11-04
 contest: Topcoder SRM
-competition: 638 Div1
-problem_type: Med
+competition: '638'
+problem_type: Div1 Med
 problem_name: NarrowPassage2
 ---
 

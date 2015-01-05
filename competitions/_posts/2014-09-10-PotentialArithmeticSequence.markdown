@@ -2,8 +2,8 @@
 layout: competition
 date: 2014-09-10
 contest: Topcoder SRM
-competition: 632 Div1
-problem_type: Easy
+competition: '632'
+problem_type: Div1 Easy
 problem_name: PotentialArithmeticSequence
 ---
 

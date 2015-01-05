@@ -2,8 +2,8 @@
 layout: competition
 date: 2015-01-02
 contest: Topcoder SRM
-competition: (unrated) 644
-problem_type: Easy
+competition: 644 (unrated)
+problem_type: Div1 Easy
 problem_name: OkonomiyakiParty
 ---
 

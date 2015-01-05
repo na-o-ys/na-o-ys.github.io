@@ -2,8 +2,8 @@
 layout: competition
 date: 2014-11-30
 contest: Topcoder SRM
-competition: 639 Div1
-problem_type: Easy
+competition: '639'
+problem_type: Div1 Easy
 problem_name: AliceGame
 ---
 

@@ -2,8 +2,8 @@
 layout: competition
 date: 2014-11-03
 contest: Topcoder SRM
-competition: 638 Div1
-problem_type: Easy
+competition: '638'
+problem_type: Div1 Easy
 problem_name: ShadowSculpture
 ---
 

@@ -2,8 +2,8 @@
 layout: competition
 date: 2014-09-18
 contest: Topcoder SRM
-competition: 633 Div1
-problem_type: Easy
+competition: '633'
+problem_type: Div1 Easy
 problem_name: PeriodicJumping
 ---
 

@@ -2,8 +2,8 @@
 layout: competition
 date:   2014-12-30 03:02:05
 contest: Topcoder SRM
-competition: 643 Div1
-problem_type: Med
+competition: '643'
+problem_type: Div1 Med
 problem_name: TheKingsArmyDiv1
 ---
 

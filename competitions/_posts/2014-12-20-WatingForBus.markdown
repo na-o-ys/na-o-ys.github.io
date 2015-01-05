@@ -2,8 +2,8 @@
 layout: competition
 date: 2014-12-20
 contest: Topcoder SRM
-competition: 642 Div1
-problem_type: Easy
+competition: '642'
+problem_type: Div1 Easy
 problem_name: WatingForBus
 ---
 

@@ -2,8 +2,8 @@
 layout: competition
 date: 2014-12-21
 contest: Topcoder SRM
-competition: 642 Div1
-problem_type: Med
+competition: '642'
+problem_type: Div1 Med
 problem_name: TaroCutting
 ---
 
