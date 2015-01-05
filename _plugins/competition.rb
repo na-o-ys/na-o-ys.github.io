@@ -18,7 +18,6 @@ module Competition
         type        = page.data['problem_type']
         name        = page.data['problem_name']
         page.data['contest_url'] = "/#{contest.to_path}/"
-        page.data['competition_url'] = "/#{contest.to_path}/#{competition.to_path}/"
         page.data['title_sub'] =
           [contest, competition].compact.join(" ")
         if type.present?
