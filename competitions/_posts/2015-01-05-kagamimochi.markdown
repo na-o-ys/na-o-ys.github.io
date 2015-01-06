@@ -10,7 +10,7 @@ problem_name: 鏡餅
 
 # 問題
 
-http://nyc2015.contest.atcoder.jp/tasks/nyc2015_2
+<http://nyc2015.contest.atcoder.jp/tasks/nyc2015_2>
 
 # 方針
 

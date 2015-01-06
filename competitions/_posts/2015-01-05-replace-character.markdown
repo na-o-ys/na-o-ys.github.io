@@ -10,7 +10,7 @@ problem_name: 文字列の置き換え
 
 # 問題
 
-http://nyc2015.contest.atcoder.jp/tasks/nyc2015_3
+<http://nyc2015.contest.atcoder.jp/tasks/nyc2015_3>
 
 # 方針
 

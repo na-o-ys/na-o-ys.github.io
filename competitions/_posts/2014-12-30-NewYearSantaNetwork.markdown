@@ -11,7 +11,7 @@ problem_name: New Year Santa Network
 
 # 問題
 
-[http://codeforces.com/contest/500/problem/D]
+<http://codeforces.com/contest/500/problem/D>
 
 ノード数 N (< 100000) の木が与えられる. 各辺は長さを持つ. 1 年に一回, ある辺の長さが更新される. 3 頂点 a, b, c を一様ランダムに選んだ時の, D = distance(a, b) + distance(b, c) + distance(c, a) の期待値を q (< 100000) 年分に求めよ.
 
