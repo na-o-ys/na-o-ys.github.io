@@ -7,7 +7,7 @@ problem_type: Div1 Easy
 problem_name: JanuszTheBusinessman
 ---
 
-DP とかグラフ理論が見えるがするが, どちらもツラめ. 見た目以上に難しいと思う.
+DP とかグラフ理論が見える気がするが, どちらもツラめ. 見た目以上に難しいと思う.
 
 # 問題
 
