@@ -2,7 +2,7 @@
 layout: competition
 date: 2015-01-13
 contest: Topcoder SRM
-competition: '644'
+competition: '645'
 problem_type: Div1 Easy
 problem_name: JanuszTheBusinessman
 ---
