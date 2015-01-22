@@ -43,3 +43,19 @@ article h1 {
     margin-top: 30px;
     border-bottom: 1px solid $grey-color-light;
 }
+
+.gist-data {
+    max-height: 800px;
+    word-break: normal;
+    table {
+        margin: 0;
+        border: none;
+    }
+    tr, td {
+        border: none !important;
+    }
+    pre {
+        overflow: visible !important;
+        line-height: inherit !important;
+    }
+}
