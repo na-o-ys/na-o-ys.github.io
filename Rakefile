@@ -29,3 +29,26 @@ task :publish => [:generate] do
     system "echo yolo"
   end
 end
+
+desc "Create new post"
+task :create, :name do |task, args|
+  name = args[:name]
+  require 'date'
+  date = Date.today.strftime "%Y-%m-%d"
+  dir = "competitions/_posts/"
+  filename = "#{dir}#{date}-#{name}.markdown"
+  open(filename, "w") do |file|
+    file.puts <<-EOS
+---
+layout: competition
+date: #{date}
+contest: Topcoder SRM
+competition: 
+problem_type: 
+problem_name: #{name}
+---
+
+    EOS
+  end
+  puts "New post: #{filename}"
+end
