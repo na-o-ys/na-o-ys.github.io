@@ -1,0 +1,28 @@
+---
+layout: competition
+date: 2015-04-12
+contest: Topcoder Open
+competition: '2015'
+problem_type: Round 1A Easy
+problem_name: Similars
+---
+
+# 問題
+
+<http://community.topcoder.com/stat?c=problem_statement&pm=13714&rd=16432>
+
+自然数 a, b を十進表記した際に, 両方共に含まれる数字 (0, 1, 2, ..., 9) の個数を S(a, b) で表す.
+
+自然数 L, R (2 <= R <= 100000, L < R) が与えられる. L <= a < b <= R なる a, b のうち S(a, b) が最大となるものを求め, S(a, b) の値を出力せよ.
+
+# 解法
+
+数字は 10 種類なので, 含まれる数字の種類は最大 1024 パターンとなる.
+
+i = L..R について, パターン毎の出現数を調べる.
+
+1024 パターンの任意のペアについて, 共通する数字の個数の最大値を調べる.
+
+# 解答
+
+<script src="https://gist.github.com/na-o-ys/b96a9a6569c1f3880c90.js"></script>
