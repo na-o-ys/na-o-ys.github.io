@@ -3,7 +3,7 @@ layout: competition
 date: 2015-06-29
 contest: Topcoder SRM
 competition: '661'
-problem_type: Div1 Dasy
+problem_type: Div1 Easy
 problem_name: MissingLCM
 ---
 
