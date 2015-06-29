@@ -9,6 +9,8 @@ problem_name: MissingLCM
 
 # 問題
 
+<http://community.topcoder.com/stat?c=problem_statement&pm=13766&rd=16464>
+
 lcm(a, b, c, ...) で a, b, c, ... の最大公約数を表す.
 
 整数 N (< 10^6) が与えられた時に, lcm(1, ..., N) = lcm(N, ..., M) となるような最小の M を求めよ.
