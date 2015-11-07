@@ -4,12 +4,12 @@ date: 2015-11-07
 title: Compute all pairwise vector similarities within a sparse matrix (Python)
 ---
 
-When we deal with some applications such as **Collaborative Filtering**, computation of similarities may become a challenge in terms of implementation or performance.
+When we deal with some applications such as **Collaborative Filtering**, computation of vector similarities may become a challenge in terms of implementation or performance.
 
 Consider a matrix whose **rows** and **columns** represent **user_ids** and **item_ids**.
 A cell contains boolean or numerical value which represents user-item information such as purchase history or item rating.
 
-At a general situation, the matrix is sparse. So we choise `scipy.sparse` library to treat the matrix.
+In a general situation, the matrix is sparse. So we choise `scipy.sparse` library to treat the matrix.
 On Item-based CF, similarities between every two items (columns) must be calculated.
 
 This post will show you the efficient implementation of similarity computation with two major similarities, **Cosine similarity** and **Jaccard similarity**.
