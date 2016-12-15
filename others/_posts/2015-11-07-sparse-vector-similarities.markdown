@@ -10,9 +10,8 @@ Consider a matrix whose **rows** and **columns** represent **user_id** and **ite
 A cell contains boolean or numerical value which represents the user-item information such as purchase history or item rating.
 
 ```
-        \ item_id
-user_id    1  2  3  4  ...
-         -----------------
+ \item_id  1  2  3  4  ...
+user_id   -------------
       1  | 1  1  0  0
       2  | 0  1  0  0
       3  | 1  0  1  0
