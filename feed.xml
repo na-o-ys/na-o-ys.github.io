@@ -1,30 +1,572 @@
----
-layout: null
----
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>{{ site.title | xml_escape }}</title>
-    <description>{{ site.description | xml_escape }}</description>
-    <link>{{ site.url }}{{ site.baseurl }}/</link>
-    <atom:link href="{{ "/feed.xml" | prepend: site.baseurl | prepend: site.url }}" rel="self" type="application/rss+xml" />
-    <pubDate>{{ site.time | date_to_rfc822 }}</pubDate>
-    <lastBuildDate>{{ site.time | date_to_rfc822 }}</lastBuildDate>
-    <generator>Jekyll v{{ jekyll.version }}</generator>
-    {% for post in site.posts limit:10 %}
+    <title>Programming/Math</title>
+    <description>algorithm, programming, scientific computing
+</description>
+    <link>http://na-o-ys.github.io/</link>
+    <atom:link href="http://na-o-ys.github.io/feed.xml" rel="self" type="application/rss+xml" />
+    <pubDate>Thu, 15 Dec 2016 14:43:59 +0900</pubDate>
+    <lastBuildDate>Thu, 15 Dec 2016 14:43:59 +0900</lastBuildDate>
+    <generator>Jekyll v3.3.1</generator>
+    
       <item>
-        <title>{{ post.title | xml_escape }}</title>
-        <description>{{ post.content | xml_escape }}</description>
-        <pubDate>{{ post.date | date_to_rfc822 }}</pubDate>
-        <link>{{ post.url | prepend: site.baseurl | prepend: site.url }}</link>
-        <guid isPermaLink="true">{{ post.url | prepend: site.baseurl | prepend: site.url }}</guid>
-        {% for tag in post.tags %}
-        <category>{{ tag | xml_escape }}</category>
-        {% endfor %}
-        {% for cat in post.categories %}
-        <category>{{ cat | xml_escape }}</category>
-        {% endfor %}
+        <title>Compute all pairwise vector similarities within a sparse matrix (Python)</title>
+        <description>&lt;p&gt;When we deal with some applications such as &lt;strong&gt;Collaborative Filtering&lt;/strong&gt; (CF), computation of vector similarities may become a challenge in terms of implementation or computational performance.&lt;/p&gt;
+
+&lt;p&gt;Consider a matrix whose &lt;strong&gt;rows&lt;/strong&gt; and &lt;strong&gt;columns&lt;/strong&gt; represent &lt;strong&gt;user_id&lt;/strong&gt; and &lt;strong&gt;item_id&lt;/strong&gt;.
+A cell contains boolean or numerical value which represents the user-item information such as purchase history or item rating.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; \item_id  1  2  3  4  ...
+user_id   -------------
+      1  | 1  1  0  0
+      2  | 0  1  0  0
+      3  | 1  0  1  0
+      4  | 0  0  0  0
+      5  | 0  0  1  0
+      ...
+
+Matrix: Whether a user purchased an item or not
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;In a general situation, the matrix is sparse. So we may use &lt;code class=&quot;highlighter-rouge&quot;&gt;scipy.sparse&lt;/code&gt; library to treat the matrix.
+On the Item-based CF, similarities to be calculated are all &lt;script type=&quot;math/tex&quot;&gt;N^2&lt;/script&gt; combinations of two items (&lt;script type=&quot;math/tex&quot;&gt;N&lt;/script&gt; columns).&lt;/p&gt;
+
+&lt;p&gt;This post will show the efficient implementation of similarity computation with two major similarities, &lt;strong&gt;Cosine similarity&lt;/strong&gt; and &lt;strong&gt;Jaccard similarity&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;h1 id=&quot;cosine-similarity&quot;&gt;Cosine Similarity&lt;/h1&gt;
+
+&lt;p&gt;Cosine similarity is defined as&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\cos(\mathbf{a}, \mathbf{b}) = \frac{\mathbf{a} \cdot \mathbf{b}}{\|\mathbf{a}\|\|\mathbf{b}\|}.&lt;/script&gt;
+
+&lt;p&gt;Below code calculates cosine similarities between all pairwise column vectors.&lt;/p&gt;
+
+&lt;p&gt;Assume that the type of &lt;code class=&quot;highlighter-rouge&quot;&gt;mat&lt;/code&gt; is &lt;code class=&quot;highlighter-rouge&quot;&gt;scipy.sparse.csc_matrix&lt;/code&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;sklearn.preprocessing&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;pp&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;cosine_similarities&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;col_normed_mat&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;normalize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mat&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tocsc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;axis&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;col_normed_mat&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;col_normed_mat&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Vectors are normalized at first. And then, cosine values are determined by matrix product.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;In [1]: import scipy.sparse as sp
+
+In [2]: mat = sp.rand(5, 4, 0.2, format='csc') # generate random sparse matrix
+[[ 0.          0.          0.          0.        ]
+ [ 0.          0.          0.          0.        ]
+ [ 0.          0.01970055  0.87107041  0.        ]
+ [ 0.          0.67868903  0.          0.        ]
+ [ 0.          0.81698843  0.          0.        ]]
+
+In [3]: cosine_similarities(mat)
+[[ 0.          0.          0.          0.        ]
+ [ 0.          1.          0.01854522  0.        ]
+ [ 0.          0.01854522  1.          0.        ]
+ [ 0.          0.          0.          0.        ]]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h1 id=&quot;jaccard-similarity&quot;&gt;Jaccard Similarity&lt;/h1&gt;
+
+&lt;p&gt;The similarity is defined as&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\frac{
+  \mathbf{a} \cdot \mathbf{b}
+}{
+  \mathbf{a} \cdot \mathbf{a} + \mathbf{b} \cdot \mathbf{b} - \mathbf{a} \cdot \mathbf{b}
+}.&lt;/script&gt;
+
+&lt;p&gt;Assume that the &lt;code class=&quot;highlighter-rouge&quot;&gt;mat&lt;/code&gt; is binary (0 or 1) matrix and the type is &lt;code class=&quot;highlighter-rouge&quot;&gt;scipy.sparse.csc_matrix&lt;/code&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;numpy&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;np&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;jaccard_similarities&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;cols_sum&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mat&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getnnz&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;axis&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;ab&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mat&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mat&lt;/span&gt;
+
+    &lt;span class=&quot;c&quot;&gt;# for rows&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;aa&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;repeat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cols_sum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ab&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getnnz&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;axis&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+    &lt;span class=&quot;c&quot;&gt;# for columns&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;bb&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cols_sum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ab&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;indices&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;similarities&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ab&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;copy&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;similarities&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;data&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;aa&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bb&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ab&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;similarities&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Jaccard implementation is a little bit complicated. In order to eliminate python-loops, the code manipulates &lt;code class=&quot;highlighter-rouge&quot;&gt;scipy.sparse.csc_matrix&lt;/code&gt;’s raw representation directly.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;In [4]: mat = sp.rand(5, 4, 0.2, format='csc')
+In [5]: mat.data[:] = 1 # binarize
+[[ 1.  1.  0.  0.]
+ [ 0.  1.  0.  0.]
+ [ 1.  0.  1.  0.]
+ [ 0.  0.  0.  0.]
+ [ 0.  0.  1.  0.]]
+
+In [6]: jaccard_similarities(mat)
+[[ 1.          0.33333333  0.33333333  0.        ]
+ [ 0.33333333  1.          0.          0.        ]
+ [ 0.33333333  0.          1.          0.        ]
+ [ 0.          0.          0.          0.        ]]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h1 id=&quot;performance&quot;&gt;Performance&lt;/h1&gt;
+
+&lt;p&gt;Those two implementations contain no python-loops. So the main calculation runs in a native code of numpy or scipy.&lt;/p&gt;
+
+&lt;p&gt;Even if the matrix has a million elements, it will be finished in a second on my laptop.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;In [7]: mat = sp.rand(10**5, 10**4, 0.001, format='csc')
+&amp;lt;100000x10000 sparse matrix of type '&amp;lt;class 'numpy.float64'&amp;gt;'
+        with 1000000 stored elements in Compressed Sparse Column format&amp;gt;
+
+In [8]: %time cosine_similarities(mat)
+CPU times: user 535 ms, sys: 91.1 ms, total: 626 ms
+Wall time: 647 ms
+
+In [9]: mat.data[:] = 1 # binarize
+In [10]: %time jaccard_similarities(mat)
+CPU times: user 857 ms, sys: 203 ms, total: 1.06 s
+Wall time: 1.14 s
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+</description>
+        <pubDate>Sat, 07 Nov 2015 00:00:00 +0900</pubDate>
+        <link>http://na-o-ys.github.io/others/2015-11-07-sparse-vector-similarities.html</link>
+        <guid isPermaLink="true">http://na-o-ys.github.io/others/2015-11-07-sparse-vector-similarities.html</guid>
+        
+        
+        <category>others</category>
+        
       </item>
-    {% endfor %}
+    
+      <item>
+        <title>Topcoder SRM 661 Div1 Easy: MissingLCM</title>
+        <description>&lt;h1 id=&quot;問題&quot;&gt;問題&lt;/h1&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://community.topcoder.com/stat?c=problem_statement&amp;amp;pm=13766&amp;amp;rd=16464&quot;&gt;http://community.topcoder.com/stat?c=problem_statement&amp;amp;pm=13766&amp;amp;rd=16464&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;lcm(a, b, c, …) で a, b, c, … の最小公倍数を表す.&lt;/p&gt;
+
+&lt;p&gt;整数 N (&amp;lt; 10^6) が与えられた時に, lcm(1, …, N) = lcm(N, …, M) となるような最小の M を求めよ.&lt;/p&gt;
+
+&lt;h1 id=&quot;解法&quot;&gt;解法&lt;/h1&gt;
+
+&lt;p&gt;1 から N に含まれる数のうち, 素数の冪乗で表されるものを考える.&lt;/p&gt;
+
+&lt;p&gt;そのような数を P_i としたとき, 条件を満たすためには P_i * 2 が 1 から M に含まれる必要がある.&lt;/p&gt;
+
+&lt;p&gt;よって求める M は, max(P_i) * 2 となる.&lt;/p&gt;
+
+&lt;h1 id=&quot;解答&quot;&gt;解答&lt;/h1&gt;
+
+&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;MissingLCM&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;public&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;getMin&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;vector&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;isPrime&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;isPrime&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;isPrime&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;isPrime&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;continue&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;isPrime&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+        &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mx&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ll&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;isPrime&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;continue&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;ll&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;mx&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;max&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mx&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+</description>
+        <pubDate>Mon, 29 Jun 2015 00:00:00 +0900</pubDate>
+        <link>http://na-o-ys.github.io/competitions/2015-06-29-MissingLCM.html</link>
+        <guid isPermaLink="true">http://na-o-ys.github.io/competitions/2015-06-29-MissingLCM.html</guid>
+        
+        
+        <category>competitions</category>
+        
+      </item>
+    
+      <item>
+        <title>Topcoder Open 2015 Round 1A Easy: Similars</title>
+        <description>&lt;h1 id=&quot;問題&quot;&gt;問題&lt;/h1&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://community.topcoder.com/stat?c=problem_statement&amp;amp;pm=13714&amp;amp;rd=16432&quot;&gt;http://community.topcoder.com/stat?c=problem_statement&amp;amp;pm=13714&amp;amp;rd=16432&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;自然数 a, b を十進表記した際に, 両方共に含まれる数字 (0, 1, 2, …, 9) の個数を S(a, b) で表す.&lt;/p&gt;
+
+&lt;p&gt;自然数 L, R (2 &amp;lt;= R &amp;lt;= 100000, L &amp;lt; R) が与えられる. L &amp;lt;= a &amp;lt; b &amp;lt;= R なる a, b のうち S(a, b) が最大となるものを求め, S(a, b) の値を出力せよ.&lt;/p&gt;
+
+&lt;h1 id=&quot;解法&quot;&gt;解法&lt;/h1&gt;
+
+&lt;p&gt;数字は 10 種類なので, 含まれる数字の種類は最大 1024 パターンとなる.&lt;/p&gt;
+
+&lt;p&gt;i = L..R について, パターン毎の出現数を調べる.&lt;/p&gt;
+
+&lt;p&gt;1024 パターンの任意のペアについて, 共通する数字の個数の最大値を調べる.&lt;/p&gt;
+
+&lt;h1 id=&quot;解答&quot;&gt;解答&lt;/h1&gt;
+
+&lt;script src=&quot;https://gist.github.com/na-o-ys/b96a9a6569c1f3880c90.js&quot;&gt;&lt;/script&gt;
+
+</description>
+        <pubDate>Sun, 12 Apr 2015 00:00:00 +0900</pubDate>
+        <link>http://na-o-ys.github.io/competitions/2015-04-12-Similars.html</link>
+        <guid isPermaLink="true">http://na-o-ys.github.io/competitions/2015-04-12-Similars.html</guid>
+        
+        
+        <category>competitions</category>
+        
+      </item>
+    
+      <item>
+        <title>Topcoder Open 2015 Round 1A Med: Autogame</title>
+        <description>&lt;h1 id=&quot;問題&quot;&gt;問題&lt;/h1&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://community.topcoder.com/stat?c=problem_statement&amp;amp;pm=13707&amp;amp;rd=16432&quot;&gt;http://community.topcoder.com/stat?c=problem_statement&amp;amp;pm=13707&amp;amp;rd=16432&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;あるゲームを考える. N (&amp;lt; 50) マスからなる盤があり, 始めに任意の 0 個以上のマスに印を置くことができる.&lt;/p&gt;
+
+&lt;p&gt;配列 a が与えられ, 1 ターンで p 番目のマスにある印が a[p-1] 番目のマスに移動する.&lt;/p&gt;
+
+&lt;p&gt;K (&amp;lt; 1,000,000,000) ターンの間に, 同じマスに複数の印が存在する状態が一度も発生しないようにしたい.&lt;/p&gt;
+
+&lt;p&gt;このような印の初期配置は何通りあるか.&lt;/p&gt;
+
+&lt;p&gt;パターン数を 1,000,000,007 で割った余りを出力せよ.&lt;/p&gt;
+
+&lt;h1 id=&quot;解法&quot;&gt;解法&lt;/h1&gt;
+
+&lt;p&gt;一度でも同じマスになった印は, それ以降ずっと同じマスを移動する. よって, K ターン目時点での印の配置のみ考えれば良い.&lt;/p&gt;
+
+&lt;p&gt;マスの数は N であり, 印が移動する周期は最大 N である. よって, K &amp;gt; N の場合, K ターン目時点での印のダブり方と N ターン目時点でのそれは一致する.&lt;/p&gt;
+
+&lt;p&gt;よって, K = min(K, N) として考える.&lt;/p&gt;
+
+&lt;p&gt;マス i_1, i_2, …, i_n に置いた印が K ターン目に同じマスにいた場合, i_1, i_2, …, i_n のどれか 1 マスにのみ印を置くことができる. すなわち, i_1, i_2, …, i_n についての初期配置の選び方は n 通りある.&lt;/p&gt;
+
+&lt;p&gt;マス 1..N について, K ターン目時点での移動先を求めて, 選び方を乗算すれば良い.&lt;/p&gt;
+
+&lt;h1 id=&quot;解答&quot;&gt;解答&lt;/h1&gt;
+
+&lt;script src=&quot;https://gist.github.com/na-o-ys/e9a1e04718c57d788605.js&quot;&gt;&lt;/script&gt;
+
+</description>
+        <pubDate>Sun, 12 Apr 2015 00:00:00 +0900</pubDate>
+        <link>http://na-o-ys.github.io/competitions/2015-04-12-Autogame.html</link>
+        <guid isPermaLink="true">http://na-o-ys.github.io/competitions/2015-04-12-Autogame.html</guid>
+        
+        
+        <category>competitions</category>
+        
+      </item>
+    
+      <item>
+        <title>Topcoder SRM 654 Div1 Easy: SquareScores</title>
+        <description>&lt;h1 id=&quot;問題&quot;&gt;問題&lt;/h1&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://community.topcoder.com/stat?c=problem_statement&amp;amp;pm=13694&amp;amp;rd=16318&quot;&gt;http://community.topcoder.com/stat?c=problem_statement&amp;amp;pm=13694&amp;amp;rd=16318&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;a-z および ‘?’ の文字からなる長さ 1000 以下の文字列 S と, 整数配列 P が与えられる.&lt;/p&gt;
+
+&lt;p&gt;’?’ には a-z の何れかが入る. ある ‘?’ に a が入る確率は P[0], b が入る確率は P[1] で, c は P[2], … でそれぞれ与えられる.&lt;/p&gt;
+
+&lt;p&gt;S の部分文字列のうち, 単一の文字からなるものの個数の期待値を求めよ.&lt;/p&gt;
+
+&lt;h1 id=&quot;解法&quot;&gt;解法&lt;/h1&gt;
+
+&lt;p&gt;位置 i から位置 j までの部分文字列が文字 c のみからなる確率を dp[c][i][j] で表す.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;dp[c][i][j] = dp[c][i][j-1]        (j 文字目が文字 c の場合)
+            = dp[c][i][j-1] * P[c] (j 文字目が '?' の場合)
+            = 0                    (otherwise)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;で表せる. 求める答えは Σdp である. c, i, j の順番でループを回せば dp を配列に持たずに答えが計算できる.&lt;/p&gt;
+
+&lt;h1 id=&quot;解答&quot;&gt;解答&lt;/h1&gt;
+
+&lt;script src=&quot;https://gist.github.com/na-o-ys/e2c87202d2acc7584c97.js&quot;&gt;&lt;/script&gt;
+
+</description>
+        <pubDate>Thu, 26 Mar 2015 00:00:00 +0900</pubDate>
+        <link>http://na-o-ys.github.io/competitions/2015-03-26-square-scores.html</link>
+        <guid isPermaLink="true">http://na-o-ys.github.io/competitions/2015-03-26-square-scores.html</guid>
+        
+        
+        <category>competitions</category>
+        
+      </item>
+    
+      <item>
+        <title>Topcoder SRM 652 Div1 Easy: ThePermutationGame</title>
+        <description>&lt;h1 id=&quot;問題&quot;&gt;問題&lt;/h1&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://community.topcoder.com/stat?c=problem_statement&amp;amp;pm=13229&amp;amp;rd=16316&quot;&gt;http://community.topcoder.com/stat?c=problem_statement&amp;amp;pm=13229&amp;amp;rd=16316&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;整数 N (&amp;lt; 100,000) が与えられる. 1 ~ N の置換 (1 ~ N を並び替えた配列) P を考える. 置換 P を m 回適用した結果を f(m) とする. f(1) = P(1), f(2) = P(P(1)), …&lt;/p&gt;
+
+&lt;p&gt;長さ N の任意の置換について, f(x) = 1 となるような最小の x を求めよ. 答えを 1,000,000,007 の剰余で出力せよ.&lt;/p&gt;
+
+&lt;h1 id=&quot;解法&quot;&gt;解法&lt;/h1&gt;
+
+&lt;p&gt;1 ~ N の最小公倍数を求めれば良い. 各素因数の最大指数を取り出していく.&lt;/p&gt;
+
+&lt;h1 id=&quot;解答&quot;&gt;解答&lt;/h1&gt;
+
+&lt;script src=&quot;https://gist.github.com/na-o-ys/902899311a3983aeac56.js&quot;&gt;&lt;/script&gt;
+
+</description>
+        <pubDate>Tue, 17 Mar 2015 00:00:00 +0900</pubDate>
+        <link>http://na-o-ys.github.io/competitions/2015-03-17-the-permutation-game.html</link>
+        <guid isPermaLink="true">http://na-o-ys.github.io/competitions/2015-03-17-the-permutation-game.html</guid>
+        
+        
+        <category>competitions</category>
+        
+      </item>
+    
+      <item>
+        <title>Codeforces Rockethon 2015 C: Second price auction</title>
+        <description>&lt;p&gt;ややこしめの数え上げをシンプルに書く練習に良い問題.&lt;/p&gt;
+
+&lt;h1 id=&quot;問題&quot;&gt;問題&lt;/h1&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://codeforces.com/contest/513/problem/C&quot;&gt;http://codeforces.com/contest/513/problem/C&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;オークションを行う. n (2 &amp;lt;= n &amp;lt;= 5) 人の参加者がいる. 
+i 人目の入札額は [l[i], r[i]] の範囲で一様ランダムに決まる. (1 &amp;lt;= l[i] &amp;lt;= r[i] &amp;lt;= 10000)
+落札額はセカンドプライス・オークション形式で決まる. つまり, 落札者の次点の入札額が落札額となる. 
+落札額の期待値を求めよ.&lt;/p&gt;
+
+&lt;h1 id=&quot;解法&quot;&gt;解法&lt;/h1&gt;
+
+&lt;p&gt;次点者, 次点入札額, 落札者 を固定して確率を計算する.&lt;/p&gt;
+
+&lt;p&gt;次点入札額と等しい入札額の参加者が複数いる場合を重複カウントしないよう, 工夫する必要がある.&lt;/p&gt;
+
+&lt;p&gt;次点者 snd, 入札額 v, 落札者 fst について考える. このとき, 参加者 i (&amp;lt; snd) の入札額が次点入札額と一致するパターンは既にカウント済みである.&lt;/p&gt;
+
+&lt;p&gt;よって, 次の条件を満たす確率を求めれば良い.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;fst の入札額 &amp;gt;= v&lt;/li&gt;
+  &lt;li&gt;snd の入札額 = v&lt;/li&gt;
+  &lt;li&gt;その他の入札額 &amp;lt;= v&lt;/li&gt;
+  &lt;li&gt;ただし, 参加者 i (&amp;lt; snd) については, 入札額が v と等しくない&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&quot;解答&quot;&gt;解答&lt;/h1&gt;
+
+&lt;script src=&quot;https://gist.github.com/na-o-ys/920922ef5803f6c01e75.js?file=c.cpp&quot;&gt;&lt;/script&gt;
+
+&lt;h1 id=&quot;別解&quot;&gt;別解&lt;/h1&gt;
+
+&lt;p&gt;本番でやった, 長くて汚いけど理解が容易な方法.&lt;/p&gt;
+
+&lt;p&gt;落札額 v (1 &amp;lt;= v &amp;lt;= 10000) を固定してループを回す.&lt;/p&gt;
+
+&lt;p&gt;n 人の参加者について,&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;入札額が v 未満&lt;/li&gt;
+  &lt;li&gt;入札額が v&lt;/li&gt;
+  &lt;li&gt;入札額が v より大&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;の 3 つのステータスを全パターン回す.&lt;/p&gt;
+
+&lt;p&gt;各ステータスの人数を cnt1, cnt2, cnt3 とすると, 落札額が v となるのは,&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;cnt2 &amp;gt;= 1&lt;/li&gt;
+  &lt;li&gt;cnt2 + cnt3 &amp;gt;= 2&lt;/li&gt;
+  &lt;li&gt;cnt3 &amp;lt; 2&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;を全て満たす場合である. これを満たすパターン全てについて, 確率計算する.&lt;/p&gt;
+
+&lt;p&gt;解答: &lt;a href=&quot;http://codeforces.com/contest/513/submission/9762252&quot;&gt;http://codeforces.com/contest/513/submission/9762252&lt;/a&gt;&lt;/p&gt;
+</description>
+        <pubDate>Sun, 08 Feb 2015 00:00:00 +0900</pubDate>
+        <link>http://na-o-ys.github.io/competitions/2015-02-08-second-price-auction.html</link>
+        <guid isPermaLink="true">http://na-o-ys.github.io/competitions/2015-02-08-second-price-auction.html</guid>
+        
+        
+        <category>competitions</category>
+        
+      </item>
+    
+      <item>
+        <title>Codeforces Rockethon 2015 B2: Permutations</title>
+        <description>&lt;h1 id=&quot;問題&quot;&gt;問題&lt;/h1&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://codeforces.com/contest/513/problem/B2&quot;&gt;http://codeforces.com/contest/513/problem/B2&lt;/a&gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;解法&quot;&gt;解法&lt;/h1&gt;
+
+&lt;p&gt;f(p) が最大となる必要十分条件は, 任意の数 i (1 &amp;lt;= i &amp;lt;= n) について, i より大きい数が全て i の左右に連続して表れることである.&lt;/p&gt;
+
+&lt;p&gt;これは, 次の命題と同値である.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;任意の区間について, 区間内の最も小さい数は区間の両端どちらかに配置されている&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;このような配列は, 1 から順に空き区間の両端どちらかに配置していくことで構成できる. 長さ n の数列について, 条件を満たすものは 2^(n-1) パターンある.&lt;/p&gt;
+
+&lt;p&gt;パターン数をカウントしながら, 1 から順にどちらの端に配置するかを決めていけば良い.&lt;/p&gt;
+
+&lt;h1 id=&quot;解答&quot;&gt;解答&lt;/h1&gt;
+
+&lt;script src=&quot;https://gist.github.com/na-o-ys/920922ef5803f6c01e75.js?file=b2.cpp&quot;&gt;&lt;/script&gt;
+
+</description>
+        <pubDate>Sun, 08 Feb 2015 00:00:00 +0900</pubDate>
+        <link>http://na-o-ys.github.io/competitions/2015-02-08-permutations.html</link>
+        <guid isPermaLink="true">http://na-o-ys.github.io/competitions/2015-02-08-permutations.html</guid>
+        
+        
+        <category>competitions</category>
+        
+      </item>
+    
+      <item>
+        <title>Topcoder SRM 645 Div1 Easy: JanuszTheBusinessman</title>
+        <description>&lt;p&gt;DP とかグラフ理論が見える気がするが, どちらもツラめ. 見た目以上に難しいと思う.&lt;/p&gt;
+
+&lt;h1 id=&quot;問題&quot;&gt;問題&lt;/h1&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://community.topcoder.com/stat?c=problem_statement&amp;amp;pm=13603&amp;amp;rd=16277&amp;amp;rm=324763&amp;amp;cr=22716052&quot;&gt;http://community.topcoder.com/stat?c=problem_statement&amp;amp;pm=13603&amp;amp;rd=16277&amp;amp;rm=324763&amp;amp;cr=22716052&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;あるホテルに宿泊する N (&amp;lt;= 50) 人の旅行者がいる. i 番目の旅行者の到着日, 出発日は arrv[i], dept[i] in { 1, …, 365 } で与えられる.&lt;/p&gt;
+
+&lt;p&gt;i 番目の旅行者に special promotion すると, 全旅行者のうち i 番目と宿泊日が重なっている者 (i 番目を含む) が good review してくれる.&lt;/p&gt;
+
+&lt;p&gt;全ての旅行者に good review してもらうためには, 少なくとも何人に special promotion すれば良いか.&lt;/p&gt;
+
+&lt;h1 id=&quot;方針&quot;&gt;方針&lt;/h1&gt;
+
+&lt;p&gt;最も出発日が早い旅行者 i について考える. i と宿泊日が重なっている者のうち, 少なくとも一人を選んで special promotion する必要がある. このうち最も出発日が遅い者 j を選ぶと, 到着日 (arrv) が dept[j] 以前の者は全て good review してくれる.&lt;/p&gt;
+
+&lt;p&gt;今度は到着日が dept[j] より後の者のうち, 最も出発日が早い旅行者について考える. 以下同様にこれを繰り返せば良い.&lt;/p&gt;
+
+&lt;h1 id=&quot;解答&quot;&gt;解答&lt;/h1&gt;
+
+&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cp&quot;&gt;#define loop(n, i) for(int i=0;i&amp;lt;n;i++)
+&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;using&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;namespace&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;INF&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;20&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;JanuszTheBusinessman&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;public&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;makeGuestsReturn&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vector&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;arrv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;vector&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dept&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;N&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;arrv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+        &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ans&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+        &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cur&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;c1&quot;&gt;// cur 以下が整理できている状態
+&lt;/span&gt;            &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fastDept&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;INF&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;loop&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;arrv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cur&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fastDept&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;min&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fastDept&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dept&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]);&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fastDept&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;INF&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;break&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+            &lt;span class=&quot;n&quot;&gt;loop&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;arrv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fastDept&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cur&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;max&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cur&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dept&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]);&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;ans&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ans&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h1 id=&quot;感想&quot;&gt;感想&lt;/h1&gt;
+
+&lt;p&gt;本番は寝過ごしたけど, Practice で汚い DP で 2 時間かけて解いた.&lt;/p&gt;
+</description>
+        <pubDate>Tue, 13 Jan 2015 00:00:00 +0900</pubDate>
+        <link>http://na-o-ys.github.io/competitions/2015-01-13-janusz-the-businessman.html</link>
+        <guid isPermaLink="true">http://na-o-ys.github.io/competitions/2015-01-13-janusz-the-businessman.html</guid>
+        
+        
+        <category>competitions</category>
+        
+      </item>
+    
+      <item>
+        <title>Topcoder SRM 636 Div1 Easy: ChocolateDividingEasy</title>
+        <description>&lt;h1 id=&quot;問題&quot;&gt;問題&lt;/h1&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://community.topcoder.com/stat?c=problem_statement&amp;amp;pm=13497&amp;amp;rd=16079&quot;&gt;http://community.topcoder.com/stat?c=problem_statement&amp;amp;pm=13497&amp;amp;rd=16079&lt;/a&gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;方針&quot;&gt;方針&lt;/h1&gt;
+
+&lt;p&gt;累積和 + greedy&lt;/p&gt;
+
+&lt;h1 id=&quot;解答&quot;&gt;解答&lt;/h1&gt;
+
+&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;bits/stdc++.h&amp;gt;
+&lt;/span&gt; 
+&lt;span class=&quot;cp&quot;&gt;#define loop(n, i) for(int i=0;i&amp;lt;n;i++)
+&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;using&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;namespace&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;std&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ChocolateDividingEasy&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;public&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;findBest&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vector&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;chocolate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;N&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;chocolate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;M&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;chocolate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;].&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+        &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ql&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;52&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;][&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;52&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{};&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;loop&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;loop&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;M&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ql&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;][&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;chocolate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;][&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;sc&quot;&gt;'0'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;loop&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;loop&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;M&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ql&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;][&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ql&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;][&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;loop&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;loop&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;M&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ql&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;][&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ql&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;][&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+        &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ans&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;loop&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;loop&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;loop&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;M&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;loop&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;M&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;continue&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;I&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;N&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+            &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;J&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;M&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+            &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;area&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;29&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;loop&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;loop&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;n&quot;&gt;area&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;min&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;area&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ql&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;I&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]][&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;J&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ql&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;I&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]][&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;J&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ql&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;I&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]][&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;J&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ql&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;I&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]][&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;J&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]]);&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;ans&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;max&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ans&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;area&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ans&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+</description>
+        <pubDate>Sat, 10 Jan 2015 00:00:00 +0900</pubDate>
+        <link>http://na-o-ys.github.io/competitions/2015-01-10-chocolate-dividing-easy.html</link>
+        <guid isPermaLink="true">http://na-o-ys.github.io/competitions/2015-01-10-chocolate-dividing-easy.html</guid>
+        
+        
+        <category>competitions</category>
+        
+      </item>
+    
   </channel>
 </rss>

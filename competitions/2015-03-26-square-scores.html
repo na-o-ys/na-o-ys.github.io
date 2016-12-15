@@ -6,12 +6,12 @@
     <meta name="viewport" content="width=device-width initial-scale=1" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-    <title>Programming/Math</title>
+    <title>Topcoder SRM 654 Div1 Easy: SquareScores</title>
     <meta name="description" content="algorithm, programming, scientific computing
 ">
 
     <link rel="stylesheet" href="/css/main.css">
-    <link rel="canonical" href="http://na-o-ys.github.io/others/">
+    <link rel="canonical" href="http://na-o-ys.github.io/competitions/2015-03-26-square-scores.html">
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
     <link rel="stylesheet" href="/css/bootstrap.css">
@@ -42,25 +42,73 @@
 
     <div class="page-content">
       <div class="wrapper">
-        <div class="home">
-  <div class="crumbs">
-    <ol>
-      <li><a href="/">home</a></li>
-      <li>others</li>
-    </ol>
-  </div>
+        <div class="post">
 
-  <ul class="post-list">
-    
-      <li>
-        <span class="post-meta">Nov 7, 2015</span>
+  <header class="post-header">
+    <div class="crumbs">
+      <ol>
+        <li><a href="/">home</a></li>
+        <li><a href="/competitions">Competitions</a></li>
+        <li>Topcoder SRM 654 Div1 Easy: SquareScores</li>
+      </ol>
+    </div>
 
-        <h2>
-          <a class="post-link" href="/others/2015-11-07-sparse-vector-similarities.html">Compute all pairwise vector similarities within a sparse matrix (Python)</a>
-        </h2>
-      </li>
-    
-  </ul>
+    <h2 class="post-subtitle">Topcoder SRM 654</h1>
+    <h1 class="post-title">Div1 Easy: SquareScores</h1>
+    <p class="post-meta">Mar 26, 2015</p>
+  </header>
+
+  <article class="post-content">
+    <h1 id="問題">問題</h1>
+
+<p><a href="http://community.topcoder.com/stat?c=problem_statement&amp;pm=13694&amp;rd=16318">http://community.topcoder.com/stat?c=problem_statement&amp;pm=13694&amp;rd=16318</a></p>
+
+<p>a-z および ‘?’ の文字からなる長さ 1000 以下の文字列 S と, 整数配列 P が与えられる.</p>
+
+<p>’?’ には a-z の何れかが入る. ある ‘?’ に a が入る確率は P[0], b が入る確率は P[1] で, c は P[2], … でそれぞれ与えられる.</p>
+
+<p>S の部分文字列のうち, 単一の文字からなるものの個数の期待値を求めよ.</p>
+
+<h1 id="解法">解法</h1>
+
+<p>位置 i から位置 j までの部分文字列が文字 c のみからなる確率を dp[c][i][j] で表す.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>dp[c][i][j] = dp[c][i][j-1]        (j 文字目が文字 c の場合)
+            = dp[c][i][j-1] * P[c] (j 文字目が '?' の場合)
+            = 0                    (otherwise)
+</code></pre>
+</div>
+
+<p>で表せる. 求める答えは Σdp である. c, i, j の順番でループを回せば dp を配列に持たずに答えが計算できる.</p>
+
+<h1 id="解答">解答</h1>
+
+<script src="https://gist.github.com/na-o-ys/e2c87202d2acc7584c97.js"></script>
+
+
+  </article>
+
+  <a href="https://twitter.com/share" class="twitter-share-button" data-url="http://na-o-ys.github.io/competitions/2015-03-26-square-scores.html" data-text="Topcoder SRM 654 Div1 Easy: SquareScores - Programming/Math" data-via="na_o_ys" data-lang="ja">ツイート</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+
+  <a href="http://b.hatena.ne.jp/entry/http://na-o-ys.github.io/competitions/2015-03-26-square-scores.html" class="hatena-bookmark-button" data-hatena-bookmark-title="Topcoder SRM 654 Div1 Easy: SquareScores - Programming/Math" data-hatena-bookmark-layout="standard-balloon" data-hatena-bookmark-lang="ja" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only@2x.png" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+
+
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'naoys'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
 
 </div>
 
