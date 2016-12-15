@@ -4,15 +4,29 @@ date: 2015-11-07
 title: Compute all pairwise vector similarities within a sparse matrix (Python)
 ---
 
-When we deal with some applications such as **Collaborative Filtering**, computation of vector similarities may become a challenge in terms of implementation or performance.
+When we deal with some applications such as **Collaborative Filtering** (CF), computation of vector similarities may become a challenge in terms of implementation or computational performance.
 
-Consider a matrix whose **rows** and **columns** represent **user_ids** and **item_ids**.
+Consider a matrix whose **rows** and **columns** represent **user_id** and **item_id**.
 A cell contains boolean or numerical value which represents the user-item information such as purchase history or item rating.
 
-In a general situation, the matrix is sparse. So we chose `scipy.sparse` library to treat the matrix.
-On Item-based CF, similarities between every two items (columns) must be calculated.
+```
+        \ item_id
+user_id    1  2  3  4  ...
+         -----------------
+      1  | 1  1  0  0
+      2  | 0  1  0  0
+      3  | 1  0  1  0
+      4  | 0  0  0  0
+      5  | 0  0  1  0
+      ...
 
-This post will show you the efficient implementation of similarity computation with two major similarities, **Cosine similarity** and **Jaccard similarity**.
+Matrix: Whether a user purchased an item or not
+```
+
+In a general situation, the matrix is sparse. So we may use `scipy.sparse` library to treat the matrix.
+On the Item-based CF, similarities to be calculated are all $$N^2$$ combinations of two items ($$N$$ columns).
+
+This post will show the efficient implementation of similarity computation with two major similarities, **Cosine similarity** and **Jaccard similarity**.
 
 # Cosine Similarity
 
@@ -22,7 +36,7 @@ $$
 \cos(\mathbf{a}, \mathbf{b}) = \frac{\mathbf{a} \cdot \mathbf{b}}{\|\mathbf{a}\|\|\mathbf{b}\|}.
 $$
 
-Below code calculates cosine similarities between every two column vectors.
+Below code calculates cosine similarities between all pairwise column vectors.
 
 Assume that the type of `mat` is `scipy.sparse.csc_matrix`.
 
@@ -105,9 +119,9 @@ In [6]: jaccard_similarities(mat)
 
 # Performance
 
-These two implementations contain no python-loops. So the main calculation runs in native code of numpy or scipy.
+Those two implementations contain no python-loops. So the main calculation runs in a native code of numpy or scipy.
 
-Even if the matrix has a million elements, it will be done in a second on my laptop.
+Even if the matrix has a million elements, it will be finished in a second on my laptop.
 
 ```
 In [7]: mat = sp.rand(10**5, 10**4, 0.001, format='csc')
